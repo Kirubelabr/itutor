@@ -22,7 +22,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Badge } from "@/components/ui/badge";
+import {
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Calendar as CalendarIcon,
+  Plus,
+  X,
+} from "lucide-react";
 
 interface FormStep {
   title: string;
@@ -31,6 +41,11 @@ interface FormStep {
 
 const TutorRegistrationForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [timeSlots, setTimeSlots] = useState<{ [key: string]: string[] }>({});
+  const [recurringSchedule, setRecurringSchedule] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const steps: FormStep[] = [
     {
@@ -51,7 +66,11 @@ const TutorRegistrationForm = () => {
     },
     {
       title: "Availability Settings",
-      description: "When are you available to teach?",
+      description: "Set your weekly availability",
+    },
+    {
+      title: "Open Schedule",
+      description: "Choose specific dates and times",
     },
   ];
 
@@ -107,7 +126,20 @@ const TutorRegistrationForm = () => {
           {currentStep === 1 && <QualificationsStep />}
           {currentStep === 2 && <SubjectExpertiseStep />}
           {currentStep === 3 && <LanguagesStep />}
-          {currentStep === 4 && <AvailabilityStep />}
+          {currentStep === 4 && (
+            <AvailabilityStep
+              recurringSchedule={recurringSchedule}
+              setRecurringSchedule={setRecurringSchedule}
+            />
+          )}
+          {currentStep === 5 && (
+            <OpenScheduleStep
+              selectedDates={selectedDates}
+              setSelectedDates={setSelectedDates}
+              timeSlots={timeSlots}
+              setTimeSlots={setTimeSlots}
+            />
+          )}
         </CardContent>
 
         <CardFooter className="flex justify-between">
@@ -395,77 +427,135 @@ const LanguagesStep = () => {
   );
 };
 
-const AvailabilityStep = () => {
+interface AvailabilityStepProps {
+  recurringSchedule: { [key: string]: boolean };
+  setRecurringSchedule: (schedule: { [key: string]: boolean }) => void;
+}
+
+const AvailabilityStep: React.FC<AvailabilityStepProps> = ({
+  recurringSchedule,
+  setRecurringSchedule,
+}) => {
   const daysOfWeek = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+    { key: "monday", label: "Monday" },
+    { key: "tuesday", label: "Tuesday" },
+    { key: "wednesday", label: "Wednesday" },
+    { key: "thursday", label: "Thursday" },
+    { key: "friday", label: "Friday" },
+    { key: "saturday", label: "Saturday" },
+    { key: "sunday", label: "Sunday" },
   ];
+
   const timeSlots = [
-    "Morning (8AM-12PM)",
-    "Afternoon (12PM-5PM)",
-    "Evening (5PM-9PM)",
+    { key: "morning", label: "Morning", time: "8:00 AM - 12:00 PM" },
+    { key: "afternoon", label: "Afternoon", time: "12:00 PM - 5:00 PM" },
+    { key: "evening", label: "Evening", time: "5:00 PM - 9:00 PM" },
   ];
+
+  const handleDayToggle = (dayKey: string) => {
+    setRecurringSchedule((prev) => ({
+      ...prev,
+      [dayKey]: !prev[dayKey],
+    }));
+  };
+
+  const handleTimeSlotToggle = (dayKey: string, timeKey: string) => {
+    const key = `${dayKey}-${timeKey}`;
+    setRecurringSchedule((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-muted-foreground">
-        Set your weekly availability for tutoring sessions.
-      </p>
+      <div className="text-center space-y-2">
+        <h3 className="text-lg font-semibold">Weekly Recurring Availability</h3>
+        <p className="text-sm text-muted-foreground">
+          Set your regular weekly schedule. Students will see these as your
+          standard available times.
+        </p>
+      </div>
 
       <div className="space-y-4">
         {daysOfWeek.map((day) => (
-          <div key={day} className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox id={day.toLowerCase()} />
-              <Label htmlFor={day.toLowerCase()} className="font-medium">
-                {day}
-              </Label>
-            </div>
-
-            <div className="ml-6 grid grid-cols-3 gap-2">
-              {timeSlots.map((slot, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <Checkbox id={`${day.toLowerCase()}-${index}`} />
-                  <Label
-                    htmlFor={`${day.toLowerCase()}-${index}`}
-                    className="text-sm"
-                  >
-                    {slot}
+          <Card key={day.key} className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id={day.key}
+                    checked={recurringSchedule[day.key] || false}
+                    onCheckedChange={() => handleDayToggle(day.key)}
+                  />
+                  <Label htmlFor={day.key} className="font-medium text-base">
+                    {day.label}
                   </Label>
                 </div>
-              ))}
+                {recurringSchedule[day.key] && (
+                  <Badge variant="secondary" className="text-xs">
+                    Available
+                  </Badge>
+                )}
+              </div>
+
+              {recurringSchedule[day.key] && (
+                <div className="ml-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {timeSlots.map((slot) => {
+                    const slotKey = `${day.key}-${slot.key}`;
+                    return (
+                      <div
+                        key={slot.key}
+                        className="flex items-center space-x-2 p-2 border rounded-lg hover:bg-muted/50"
+                      >
+                        <Checkbox
+                          id={slotKey}
+                          checked={recurringSchedule[slotKey] || false}
+                          onCheckedChange={() =>
+                            handleTimeSlotToggle(day.key, slot.key)
+                          }
+                        />
+                        <div className="flex-1">
+                          <Label
+                            htmlFor={slotKey}
+                            className="text-sm font-medium cursor-pointer"
+                          >
+                            {slot.label}
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            {slot.time}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       <Separator />
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Session Preferences</h3>
-
-        <div className="space-y-2">
-          <Label>Session Format</Label>
-          <div className="flex flex-col space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="p-4">
+          <h4 className="font-medium mb-3">Session Format</h4>
+          <div className="space-y-2">
             <div className="flex items-center space-x-2">
-              <Checkbox id="online" />
-              <Label htmlFor="online">Online</Label>
+              <Checkbox id="online" defaultChecked />
+              <Label htmlFor="online">Online Sessions</Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox id="inPerson" />
-              <Label htmlFor="inPerson">In-person</Label>
+              <Label htmlFor="inPerson">In-person Sessions</Label>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="space-y-2">
-          <Label>Session Duration</Label>
-          <RadioGroup defaultValue="60">
+        <Card className="p-4">
+          <h4 className="font-medium mb-3">Session Duration Options</h4>
+          <RadioGroup defaultValue="60" className="space-y-2">
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="30" id="duration-30" />
               <Label htmlFor="duration-30">30 minutes</Label>
@@ -483,13 +573,261 @@ const AvailabilityStep = () => {
               <Label htmlFor="duration-120">120 minutes</Label>
             </div>
           </RadioGroup>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="hourlyRate">Hourly Rate (USD)</Label>
-          <Input id="hourlyRate" type="number" placeholder="e.g. 25" />
-        </div>
+        </Card>
       </div>
+
+      <Card className="p-4">
+        <div className="space-y-3">
+          <Label htmlFor="hourlyRate" className="text-base font-medium">
+            Hourly Rate (USD)
+          </Label>
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl font-bold">$</span>
+            <Input
+              id="hourlyRate"
+              type="number"
+              placeholder="45"
+              className="text-lg font-medium"
+              defaultValue="45"
+            />
+            <span className="text-muted-foreground">/hour</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Set a competitive rate based on your experience and qualifications.
+          </p>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+interface OpenScheduleStepProps {
+  selectedDates: Date[];
+  setSelectedDates: (dates: Date[]) => void;
+  timeSlots: { [key: string]: string[] };
+  setTimeSlots: (slots: { [key: string]: string[] }) => void;
+}
+
+const OpenScheduleStep: React.FC<OpenScheduleStepProps> = ({
+  selectedDates,
+  setSelectedDates,
+  timeSlots,
+  setTimeSlots,
+}) => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [customTimeSlot, setCustomTimeSlot] = useState("");
+
+  const predefinedTimeSlots = [
+    "9:00 AM - 10:00 AM",
+    "10:00 AM - 11:00 AM",
+    "11:00 AM - 12:00 PM",
+    "1:00 PM - 2:00 PM",
+    "2:00 PM - 3:00 PM",
+    "3:00 PM - 4:00 PM",
+    "4:00 PM - 5:00 PM",
+    "6:00 PM - 7:00 PM",
+    "7:00 PM - 8:00 PM",
+  ];
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      const dateKey = date.toDateString();
+      if (!selectedDates.find((d) => d.toDateString() === dateKey)) {
+        setSelectedDates([...selectedDates, date]);
+        setTimeSlots({ ...timeSlots, [dateKey]: [] });
+      }
+    }
+  };
+
+  const addTimeSlot = (dateKey: string, slot: string) => {
+    const currentSlots = timeSlots[dateKey] || [];
+    if (!currentSlots.includes(slot)) {
+      setTimeSlots({
+        ...timeSlots,
+        [dateKey]: [...currentSlots, slot],
+      });
+    }
+  };
+
+  const removeTimeSlot = (dateKey: string, slot: string) => {
+    const currentSlots = timeSlots[dateKey] || [];
+    setTimeSlots({
+      ...timeSlots,
+      [dateKey]: currentSlots.filter((s) => s !== slot),
+    });
+  };
+
+  const removeDateSlot = (dateToRemove: Date) => {
+    const dateKey = dateToRemove.toDateString();
+    setSelectedDates(selectedDates.filter((d) => d.toDateString() !== dateKey));
+    const newTimeSlots = { ...timeSlots };
+    delete newTimeSlots[dateKey];
+    setTimeSlots(newTimeSlots);
+  };
+
+  const addCustomTimeSlot = (dateKey: string) => {
+    if (customTimeSlot.trim()) {
+      addTimeSlot(dateKey, customTimeSlot.trim());
+      setCustomTimeSlot("");
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center space-y-2">
+        <h3 className="text-lg font-semibold">Open Schedule</h3>
+        <p className="text-sm text-muted-foreground">
+          Select specific dates and times when you're available for sessions.
+          This helps students book at their convenience.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Calendar Selection */}
+        <Card className="p-4">
+          <h4 className="font-medium mb-3 flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4" />
+            Select Available Dates
+          </h4>
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={handleDateSelect}
+            disabled={(date) => date < new Date()}
+            className="rounded-md border"
+          />
+        </Card>
+
+        {/* Selected Dates and Time Slots */}
+        <Card className="p-4">
+          <h4 className="font-medium mb-3 flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Available Time Slots
+          </h4>
+
+          {selectedDates.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <CalendarIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>Select dates from the calendar to add time slots</p>
+            </div>
+          ) : (
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {selectedDates.map((date) => {
+                const dateKey = date.toDateString();
+                const slots = timeSlots[dateKey] || [];
+
+                return (
+                  <div key={dateKey} className="border rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <h5 className="font-medium">
+                        {date.toLocaleDateString("en-US", {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </h5>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeDateSlot(date)}
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Predefined Time Slots */}
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {predefinedTimeSlots.map((slot) => (
+                        <Button
+                          key={slot}
+                          variant={slots.includes(slot) ? "default" : "outline"}
+                          size="sm"
+                          onClick={() =>
+                            slots.includes(slot)
+                              ? removeTimeSlot(dateKey, slot)
+                              : addTimeSlot(dateKey, slot)
+                          }
+                          className="text-xs h-8"
+                        >
+                          {slot}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {/* Custom Time Slot Input */}
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="e.g., 8:00 PM - 9:00 PM"
+                        value={customTimeSlot}
+                        onChange={(e) => setCustomTimeSlot(e.target.value)}
+                        className="text-sm"
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            addCustomTimeSlot(dateKey);
+                          }
+                        }}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addCustomTimeSlot(dateKey)}
+                        className="px-3"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    {/* Selected Time Slots */}
+                    {slots.length > 0 && (
+                      <div className="mt-3 space-y-1">
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Selected times:
+                        </p>
+                        <div className="flex flex-wrap gap-1">
+                          {slots.map((slot) => (
+                            <Badge
+                              key={slot}
+                              variant="secondary"
+                              className="text-xs flex items-center gap-1"
+                            >
+                              {slot}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeTimeSlot(dateKey, slot)}
+                                className="h-3 w-3 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                              >
+                                <X className="h-2 w-2" />
+                              </Button>
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {selectedDates.length > 0 && (
+        <Card className="p-4 bg-muted/50">
+          <h4 className="font-medium mb-2">Summary</h4>
+          <p className="text-sm text-muted-foreground">
+            You have selected {selectedDates.length} date(s) with a total of{" "}
+            {Object.values(timeSlots).reduce(
+              (total, slots) => total + slots.length,
+              0,
+            )}{" "}
+            time slot(s). Students will be able to book these specific times.
+          </p>
+        </Card>
+      )}
     </div>
   );
 };

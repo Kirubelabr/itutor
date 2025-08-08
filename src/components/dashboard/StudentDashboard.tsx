@@ -446,10 +446,16 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
           <h1 className="text-2xl font-bold">
             Welcome back, {studentName.split(" ")[0]}!
           </h1>
-          <Button>
-            <Search className="mr-2 h-4 w-4" />
-            Find a Tutor
-          </Button>
+          <div className="flex gap-2">
+            <Button>
+              <Search className="mr-2 h-4 w-4" />
+              Find a Tutor
+            </Button>
+            <Button variant="outline">
+              <Calendar className="mr-2 h-4 w-4" />
+              Browse Schedules
+            </Button>
+          </div>
         </div>
 
         {/* Sessions Section */}

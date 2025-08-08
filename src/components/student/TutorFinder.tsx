@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Search,
   Filter,
@@ -9,6 +10,8 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowUpDown,
+  Calendar as CalendarIcon,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +57,15 @@ interface TutorCardProps {
   hourlyRate: number;
   availability: string;
   description: string;
+  weeklyAvailability?: {
+    [key: string]: string[];
+  };
+  openSchedule?: {
+    date: string;
+    timeSlots: string[];
+  }[];
+  sessionFormats?: string[];
+  sessionDurations?: string[];
 }
 
 const TutorFinder = () => {
@@ -74,6 +86,26 @@ const TutorFinder = () => {
       availability: "Weekdays, Evenings",
       description:
         "PhD in Mathematics with 10+ years of teaching experience. Specializes in advanced calculus and physics.",
+      weeklyAvailability: {
+        Monday: ["Morning", "Evening"],
+        Tuesday: ["Morning", "Afternoon"],
+        Wednesday: ["Evening"],
+        Thursday: ["Morning", "Evening"],
+        Friday: ["Afternoon"],
+      },
+      openSchedule: [
+        {
+          date: "2024-01-15",
+          timeSlots: ["9:00 AM - 10:00 AM", "2:00 PM - 3:00 PM"],
+        },
+        {
+          date: "2024-01-16",
+          timeSlots: ["10:00 AM - 11:00 AM", "3:00 PM - 4:00 PM"],
+        },
+        { date: "2024-01-17", timeSlots: ["1:00 PM - 2:00 PM"] },
+      ],
+      sessionFormats: ["Online", "In-person"],
+      sessionDurations: ["60 min", "90 min"],
     },
     {
       id: "2",
@@ -86,6 +118,24 @@ const TutorFinder = () => {
       availability: "Weekends, Evenings",
       description:
         "Computer Science professor with expertise in algorithms, data structures, and programming languages.",
+      weeklyAvailability: {
+        Saturday: ["Morning", "Afternoon"],
+        Sunday: ["Afternoon", "Evening"],
+        Monday: ["Evening"],
+        Wednesday: ["Evening"],
+      },
+      openSchedule: [
+        {
+          date: "2024-01-20",
+          timeSlots: ["10:00 AM - 11:00 AM", "11:00 AM - 12:00 PM"],
+        },
+        {
+          date: "2024-01-21",
+          timeSlots: ["2:00 PM - 3:00 PM", "6:00 PM - 7:00 PM"],
+        },
+      ],
+      sessionFormats: ["Online"],
+      sessionDurations: ["60 min", "90 min", "120 min"],
     },
     {
       id: "3",
@@ -342,12 +392,15 @@ const TutorFinder = () => {
             </div>
 
             {/* Tutor cards */}
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 gap-4">
               {tutors.map((tutor) => (
-                <Card key={tutor.id} className="overflow-hidden">
+                <Card
+                  key={tutor.id}
+                  className="overflow-hidden hover:shadow-md transition-shadow"
+                >
                   <div className="flex flex-col md:flex-row">
-                    <div className="p-6 flex flex-col items-center md:w-1/4 border-r border-border">
-                      <Avatar className="h-24 w-24 mb-3">
+                    <div className="p-4 flex flex-col items-center md:w-1/4 border-r border-border">
+                      <Avatar className="h-20 w-20 mb-3">
                         <AvatarImage src={tutor.avatar} alt={tutor.name} />
                         <AvatarFallback>
                           {tutor.name
@@ -359,14 +412,10 @@ const TutorFinder = () => {
                       <h3 className="font-semibold text-lg text-center mb-1">
                         {tutor.name}
                       </h3>
-                      <div className="flex items-center gap-1 mb-3">
+                      <div className="flex items-center gap-1 mb-2">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="font-medium">{tutor.rating}</span>
                       </div>
-                      <p className="text-center text-muted-foreground text-sm mb-4">
-                        <Clock className="inline h-3 w-3 mr-1" />
-                        {tutor.availability}
-                      </p>
                       <div className="mt-auto">
                         <p className="font-bold text-xl text-center">
                           ${tutor.hourlyRate}/hr
@@ -374,21 +423,26 @@ const TutorFinder = () => {
                       </div>
                     </div>
 
-                    <div className="p-6 md:w-3/4">
-                      <div className="mb-4">
+                    <div className="p-4 md:w-3/4 flex flex-col">
+                      <div className="mb-3">
                         <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-1">
                           <BookOpen size={14} /> Subjects
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                          {tutor.subjects.map((subject, index) => (
+                          {tutor.subjects.slice(0, 3).map((subject, index) => (
                             <Badge key={index} variant="secondary">
                               {subject}
                             </Badge>
                           ))}
+                          {tutor.subjects.length > 3 && (
+                            <Badge variant="outline">
+                              +{tutor.subjects.length - 3} more
+                            </Badge>
+                          )}
                         </div>
                       </div>
 
-                      <div className="mb-4">
+                      <div className="mb-3">
                         <h4 className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-1">
                           <Globe size={14} /> Languages
                         </h4>
@@ -401,15 +455,25 @@ const TutorFinder = () => {
                         </div>
                       </div>
 
-                      <p className="text-sm text-muted-foreground mb-4">
+                      <div className="mb-3">
+                        <p className="text-sm text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {tutor.availability}
+                        </p>
+                      </div>
+
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                         {tutor.description}
                       </p>
 
                       <div className="flex flex-col sm:flex-row gap-3 mt-auto">
                         <Button className="flex-1">Book a Session</Button>
-                        <Button variant="outline" className="flex-1">
-                          View Profile
-                        </Button>
+                        <Link to={`/tutor/${tutor.id}`} className="flex-1">
+                          <Button variant="outline" className="w-full">
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Profile
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </div>
