@@ -1,4 +1,7 @@
-import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
@@ -6,27 +9,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar } from "@/components/ui/calendar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  CalendarIcon,
-  Users,
-  BookOpen,
-  Settings,
   Bell,
-  ChevronRight,
-  MessageSquare,
+  BookOpen,
   Brain,
-  FileText,
-  Video,
+  CalendarIcon,
   Download,
   ExternalLink,
+  FileText,
+  MessageSquare,
+  Settings,
+  Users,
+  Video
 } from "lucide-react";
+import React from "react";
+import { Link } from "react-router-dom";
 
 interface TutorDashboardProps {
   tutorName?: string;
@@ -234,14 +233,18 @@ export default function TutorDashboard({
             <Users className="h-5 w-5" />
             <span>Students</span>
           </div>
+          <Link to="/tutor/sessions">
           <div className="flex items-center space-x-2 text-muted-foreground hover:text-foreground rounded-md px-3 py-2 cursor-pointer">
             <BookOpen className="h-5 w-5" />
             <span>Sessions</span>
           </div>
+          </Link>
+          <Link to="/tutor/messages">
           <div className="flex items-center space-x-2 text-muted-foreground hover:text-foreground rounded-md px-3 py-2 cursor-pointer">
             <MessageSquare className="h-5 w-5" />
             <span>Messages</span>
           </div>
+          </Link>
           <div className="flex items-center space-x-2 text-muted-foreground hover:text-foreground rounded-md px-3 py-2 cursor-pointer">
             <Settings className="h-5 w-5" />
             <span>Settings</span>

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,38 +9,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog";
-import { Calendar } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  BookOpen,
-  Clock,
-  Brain,
-  Search,
-  MessageSquare,
-  BarChart2,
-  Send,
-  FileText,
-  Video,
-  ExternalLink,
-  Download,
-  Lightbulb,
-  Target,
-  TrendingUp,
+  BarChart2, BookOpen, Brain, Calendar, Clock, Download, ExternalLink, FileText, Lightbulb, MessageSquare, Search, Send, Target,
+  TrendingUp, Video
 } from "lucide-react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface Session {
   id: string;
@@ -407,26 +393,34 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             <Calendar className="mr-2 h-4 w-4" />
             Dashboard
           </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <Search className="mr-2 h-4 w-4" />
-            Find Tutors
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <BookOpen className="mr-2 h-4 w-4" />
-            My Sessions
-          </Button>
-          <Button variant="ghost" className="w-full justify-start">
-            <Brain className="mr-2 h-4 w-4" />
-            AI Assistant
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => setIsBuzeChatOpen(true)}
-          >
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Messages
-          </Button>
+          <Link to="/student/find-tutor">
+            <Button variant="ghost" className="w-full justify-start">
+              <Search className="mr-2 h-4 w-4" />
+              Find Tutors
+            </Button>
+          </Link>
+          <Link to="/student/sessions">
+            <Button variant="ghost" className="w-full justify-start">
+              <BookOpen className="mr-2 h-4 w-4" />
+              My Sessions
+            </Button>
+          </Link>
+          <Link to="/student/assistant">
+            <Button variant="ghost" className="w-full justify-start">
+              <Brain className="mr-2 h-4 w-4" />
+              AI Assistant
+            </Button>
+          </Link>
+          <Link to="/student/messages">
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => setIsBuzeChatOpen(true)}
+            >
+              <MessageSquare className="mr-2 h-4 w-4" />
+              Messages
+            </Button>
+          </Link>
           <Button variant="ghost" className="w-full justify-start">
             <BarChart2 className="mr-2 h-4 w-4" />
             Progress

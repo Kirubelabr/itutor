@@ -1,29 +1,28 @@
-import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
 import {
+  ArrowLeft,
   CalendarIcon,
   Clock,
-  Video,
-  MessageSquare,
-  FileText,
-  Star,
-  ArrowLeft,
-  Users,
   DollarSign,
+  FileText,
+  MessageSquare,
+  Star,
   TrendingUp,
+  Users,
+  Video,
 } from "lucide-react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 interface Session {
@@ -435,7 +434,7 @@ export default function TutorSessions({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Response Time</span>
-                  <span className="font-medium">< 2 hours</span>
+                  <span className="font-medium">2 hours</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Rebooking Rate</span>
