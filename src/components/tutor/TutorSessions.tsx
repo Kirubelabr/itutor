@@ -7,7 +7,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -136,8 +136,13 @@ export default function TutorSessions({
     ));
   };
 
-  const totalEarnings = completedSessions.reduce((sum, session) => sum + (session.earnings || 0), 0);
-  const averageRating = completedSessions.reduce((sum, session) => sum + (session.rating || 0), 0) / completedSessions.length;
+  const totalEarnings = completedSessions.reduce(
+    (sum, session) => sum + (session.earnings || 0),
+    0,
+  );
+  const averageRating =
+    completedSessions.reduce((sum, session) => sum + (session.rating || 0), 0) /
+    completedSessions.length;
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -178,7 +183,10 @@ export default function TutorSessions({
               <TabsContent value="upcoming" className="mt-6">
                 <div className="space-y-4">
                   {upcomingSessions.map((session) => (
-                    <Card key={session.id} className="hover:shadow-md transition-shadow">
+                    <Card
+                      key={session.id}
+                      className="hover:shadow-md transition-shadow"
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-4">
@@ -206,7 +214,7 @@ export default function TutorSessions({
                             </Badge>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <div className="flex items-center space-x-2">
@@ -221,7 +229,7 @@ export default function TutorSessions({
                               <span>Duration: {session.duration}</span>
                             </div>
                           </div>
-                          
+
                           <div className="flex space-x-2">
                             <Button size="sm" variant="outline">
                               <MessageSquare className="mr-2 h-4 w-4" />
@@ -245,7 +253,10 @@ export default function TutorSessions({
               <TabsContent value="completed" className="mt-6">
                 <div className="space-y-4">
                   {completedSessions.map((session) => (
-                    <Card key={session.id} className="hover:shadow-md transition-shadow">
+                    <Card
+                      key={session.id}
+                      className="hover:shadow-md transition-shadow"
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center space-x-4">
@@ -265,7 +276,9 @@ export default function TutorSessions({
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Badge variant="secondary">${session.earnings}</Badge>
+                            <Badge variant="secondary">
+                              ${session.earnings}
+                            </Badge>
                             {session.rating && (
                               <div className="flex items-center space-x-1">
                                 {renderStars(session.rating)}
@@ -274,7 +287,7 @@ export default function TutorSessions({
                             <Badge variant="secondary">{session.status}</Badge>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-6 text-sm text-muted-foreground">
                             <div className="flex items-center space-x-2">
@@ -289,7 +302,7 @@ export default function TutorSessions({
                               <span>Duration: {session.duration}</span>
                             </div>
                           </div>
-                          
+
                           <div className="flex space-x-2">
                             <Button size="sm" variant="outline">
                               <FileText className="mr-2 h-4 w-4" />
@@ -301,10 +314,12 @@ export default function TutorSessions({
                             </Button>
                           </div>
                         </div>
-                        
+
                         {session.notes && (
                           <div className="mt-4 p-3 bg-muted rounded-lg">
-                            <p className="text-sm font-medium mb-1">Session Notes:</p>
+                            <p className="text-sm font-medium mb-1">
+                              Session Notes:
+                            </p>
                             <p className="text-sm">{session.notes}</p>
                           </div>
                         )}
@@ -356,7 +371,9 @@ export default function TutorSessions({
                                   </AvatarFallback>
                                 </Avatar>
                                 <div>
-                                  <p className="font-medium">{session.subject}</p>
+                                  <p className="font-medium">
+                                    {session.subject}
+                                  </p>
                                   <p className="text-sm text-muted-foreground">
                                     {session.studentName}
                                   </p>
@@ -370,8 +387,9 @@ export default function TutorSessions({
                               </div>
                             </div>
                           ))}
-                        {upcomingSessions.filter((session) => session.date === "Today")
-                          .length === 0 && (
+                        {upcomingSessions.filter(
+                          (session) => session.date === "Today",
+                        ).length === 0 && (
                           <p className="text-sm text-muted-foreground text-center py-4">
                             No sessions scheduled for this day
                           </p>
@@ -396,24 +414,36 @@ export default function TutorSessions({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">This Month</span>
+                  <span className="text-sm text-muted-foreground">
+                    This Month
+                  </span>
                   <span className="font-medium">${totalEarnings}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Sessions</span>
-                  <span className="font-medium">{completedSessions.length}</span>
+                  <span className="text-sm text-muted-foreground">
+                    Sessions
+                  </span>
+                  <span className="font-medium">
+                    {completedSessions.length}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Avg Rating</span>
+                  <span className="text-sm text-muted-foreground">
+                    Avg Rating
+                  </span>
                   <div className="flex items-center space-x-1">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-medium">{averageRating.toFixed(1)}</span>
+                    <span className="font-medium">
+                      {averageRating.toFixed(1)}
+                    </span>
                   </div>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Students</span>
+                  <span className="text-sm text-muted-foreground">
+                    Students
+                  </span>
                   <span className="font-medium">
-                    {new Set(completedSessions.map(s => s.studentName)).size}
+                    {new Set(completedSessions.map((s) => s.studentName)).size}
                   </span>
                 </div>
               </CardContent>
@@ -429,15 +459,21 @@ export default function TutorSessions({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Completion Rate</span>
+                  <span className="text-sm text-muted-foreground">
+                    Completion Rate
+                  </span>
                   <span className="font-medium">98%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Response Time</span>
+                  <span className="text-sm text-muted-foreground">
+                    Response Time
+                  </span>
                   <span className="font-medium">2 hours</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Rebooking Rate</span>
+                  <span className="text-sm text-muted-foreground">
+                    Rebooking Rate
+                  </span>
                   <span className="font-medium">85%</span>
                 </div>
               </CardContent>
